@@ -60,23 +60,6 @@ func TestProgram_Close(t *testing.T) {
 	}
 }
 
-// RED — repository scoped lookup.
-func TestProgramRepo_TenantScopedLookup(t *testing.T) {
-	t.Parallel()
-	r := apprenticeship.NewProgramRepo()
-	p, _ := apprenticeship.NewProgram("t-1", "emp-1", "X", "y", 12, nil)
-	r.Save(p)
-	if _, ok := r.Get("t-1", p.ID); !ok {
-		t.Errorf("expected hit")
-	}
-	if _, ok := r.Get("t-OTHER", p.ID); ok {
-		t.Errorf("cross-tenant must miss")
-	}
-	if got := r.ListByTenant("t-1"); len(got) != 1 {
-		t.Errorf("expected 1, got %d", len(got))
-	}
-}
-
 // RED — NewProgram guard clauses: tenant / employer / title are required.
 func TestNewProgram_RequiredFields(t *testing.T) {
 	t.Parallel()

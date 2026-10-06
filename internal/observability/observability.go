@@ -24,9 +24,6 @@
 //     context. Mount as the OUTERMOST middleware around the chora-wbl
 //     mux so route handlers + sub-handlers run inside the request span.
 //
-//   - Tracer() returns the tracer scoped to ServiceName for in-handler
-//     manual span creation.
-//
 // Per CLAUDE.md "no inline config" — endpoint + environment come from env
 // vars (OTEL_EXPORTER_OTLP_ENDPOINT, DEPLOYMENT_ENVIRONMENT, CLOUD_REGION).
 // The canonical lib falls back to stdouttrace in dev (no endpoint).
@@ -41,9 +38,6 @@ import (
 	"net/http"
 	"strings"
 	"time"
-
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/trace"
 
 	commonotel "github.com/apollo-chora/chora-common/otel"
 	commontracing "github.com/apollo-chora/chora-common/tracing"
@@ -65,11 +59,6 @@ const ServiceVersion = "0.1.0"
 func Init(ctx context.Context) (shutdown func(context.Context) error, err error) {
 	return commonotel.Init(ctx, ServiceName, ServiceVersion)
 }
-
-// Tracer returns a Tracer scoped to this service — sugar for
-// otel.Tracer(ServiceName). Safe to call before Init (the OTel SDK falls
-// back to a no-op TracerProvider).
-func Tracer() trace.Tracer { return otel.Tracer(ServiceName) }
 
 // HTTPMiddleware returns net/http middleware that starts an OTel
 // server-side span per inbound request, extracts inbound W3C TraceContext

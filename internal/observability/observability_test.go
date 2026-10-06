@@ -109,13 +109,6 @@ func TestInit_DevFallback_StdoutExporter(t *testing.T) {
 	}
 }
 
-// Tracer() returns a usable Tracer scoped to ServiceName.
-func TestTracer_NotNil(t *testing.T) {
-	if observability.Tracer() == nil {
-		t.Error("Tracer() returned nil")
-	}
-}
-
 // HTTPMiddleware starts an OTel server-side span per request, propagates W3C
 // trace context, and continues an inbound traceparent rather than starting a
 // fresh root. Regression-guards the trace-propagation gap that closed

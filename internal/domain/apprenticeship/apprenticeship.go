@@ -107,17 +107,6 @@ func (r *ProgramRepo) Save(p *Program) {
 	r.by[p.ID] = p
 }
 
-// Get tenant-scoped.
-func (r *ProgramRepo) Get(tenantID, id string) (*Program, bool) {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-	p, ok := r.by[id]
-	if !ok || p.TenantID != tenantID {
-		return nil, false
-	}
-	return p, true
-}
-
 // ListByTenant returns programs for a tenant.
 func (r *ProgramRepo) ListByTenant(tenantID string) []*Program {
 	r.mu.RLock()

@@ -135,26 +135,6 @@ func NewRoster() *Roster {
 	return &Roster{entries: make(map[string]map[string][]RosterEntry)}
 }
 
-// Add inserts a roster entry. Idempotent on (gcid, placement_kind) within an
-// employer (re-adding the same gcid as the same kind is a no-op).
-func (r *Roster) Add(tenantID, employerID, gcid, kind string) {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	if _, ok := r.entries[tenantID]; !ok {
-		r.entries[tenantID] = make(map[string][]RosterEntry)
-	}
-	for _, e := range r.entries[tenantID][employerID] {
-		if e.GCID == gcid && e.PlacementKnd == kind {
-			return
-		}
-	}
-	r.entries[tenantID][employerID] = append(r.entries[tenantID][employerID], RosterEntry{
-		GCID:         gcid,
-		PlacementKnd: kind,
-		JoinedAt:     time.Now().UTC(),
-	})
-}
-
 // List returns the roster entries scoped to (tenantID, employerID).
 func (r *Roster) List(tenantID, employerID string) []RosterEntry {
 	r.mu.RLock()

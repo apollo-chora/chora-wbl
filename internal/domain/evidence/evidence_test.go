@@ -109,22 +109,3 @@ func TestEvidenceRepo_Get(t *testing.T) {
 		t.Errorf("missing must miss")
 	}
 }
-
-// RED — repo: list by milestone, scoped to tenant.
-func TestEvidenceRepo_ListByMilestone(t *testing.T) {
-	t.Parallel()
-	repo := evidence.NewRepo()
-	a, _ := evidence.NewEvidence("t-1", "g1", "m-1", evidence.KindArtifact, "x", "y", nil)
-	b, _ := evidence.NewEvidence("t-1", "g1", "m-1", evidence.KindReflection, "x", "y", nil)
-	c, _ := evidence.NewEvidence("t-1", "g2", "m-2", evidence.KindArtifact, "x", "y", nil)
-	repo.Save(a)
-	repo.Save(b)
-	repo.Save(c)
-	got := repo.ListByMilestone("t-1", "m-1")
-	if len(got) != 2 {
-		t.Errorf("expected 2, got %d", len(got))
-	}
-	if got := repo.ListByMilestone("t-OTHER", "m-1"); len(got) != 0 {
-		t.Errorf("cross-tenant must be empty")
-	}
-}

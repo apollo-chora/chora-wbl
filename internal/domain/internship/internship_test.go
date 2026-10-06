@@ -129,38 +129,6 @@ func TestListingRepo_SaveAndFind(t *testing.T) {
 	}
 }
 
-// RED — Application Repo + ListingApplications.
-func TestApplicationRepo_ListByListing(t *testing.T) {
-	t.Parallel()
-	r := internship.NewApplicationRepo()
-	a1, _ := internship.NewApplication("t-1", "lst-1", "gcid-A", "good")
-	a2, _ := internship.NewApplication("t-1", "lst-1", "gcid-B", "great")
-	a3, _ := internship.NewApplication("t-1", "lst-2", "gcid-C", "ok")
-	r.Save(a1)
-	r.Save(a2)
-	r.Save(a3)
-	got := r.ListByListing("t-1", "lst-1")
-	if len(got) != 2 {
-		t.Errorf("expected 2 applications for lst-1, got %d", len(got))
-	}
-}
-
-// RED — Matching logic: skills overlap returns score 0..1.
-func TestMatchScore(t *testing.T) {
-	t.Parallel()
-	score := internship.MatchScore([]string{"go", "k8s", "postgres"}, []string{"go", "postgres"})
-	if score < 0.5 || score > 1.0 {
-		t.Errorf("expected reasonable score, got %.2f", score)
-	}
-	zero := internship.MatchScore([]string{"go"}, []string{"java"})
-	if zero != 0 {
-		t.Errorf("expected zero on disjoint, got %.2f", zero)
-	}
-	if got := internship.MatchScore(nil, []string{"go"}); got != 0 {
-		t.Errorf("empty listing skills should be 0, got %.2f", got)
-	}
-}
-
 // RED — Listing.Close transitions Open -> Closed and is non-idempotent for
 // invalid transitions.
 func TestListing_Close(t *testing.T) {

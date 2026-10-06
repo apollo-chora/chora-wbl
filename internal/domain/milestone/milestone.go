@@ -165,16 +165,3 @@ func (r *Repo) Get(tenantID, id string) (*Milestone, bool) {
 	}
 	return m, true
 }
-
-// ListByPlacement returns milestones for a placement.
-func (r *Repo) ListByPlacement(tenantID, placementID string) []*Milestone {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-	out := make([]*Milestone, 0)
-	for _, m := range r.by {
-		if m.TenantID == tenantID && m.PlacementID == placementID {
-			out = append(out, m)
-		}
-	}
-	return out
-}

@@ -259,42 +259,6 @@ func (r *ApplicationRepo) Get(tenantID, id string) (*Application, bool) {
 	return a, true
 }
 
-// ListByListing returns applications for a listing scoped to tenant.
-func (r *ApplicationRepo) ListByListing(tenantID, listingID string) []*Application {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-	out := make([]*Application, 0)
-	for _, a := range r.by {
-		if a.TenantID == tenantID && a.ListingID == listingID {
-			out = append(out, a)
-		}
-	}
-	return out
-}
-
-// MatchScore computes a simple Jaccard-like overlap between a learner's
-// skills and a listing's required skills. Returns a value in [0, 1].
-//
-// In M12+ this is a starting point for the matching engine which folds in
-// LearningAtom mastery + Familiar persona signals; the skeleton uses a
-// pure-domain primitive so the algorithm is testable in isolation.
-func MatchScore(listingSkills, learnerSkills []string) float64 {
-	if len(listingSkills) == 0 {
-		return 0
-	}
-	have := make(map[string]struct{}, len(learnerSkills))
-	for _, s := range learnerSkills {
-		have[strings.ToLower(strings.TrimSpace(s))] = struct{}{}
-	}
-	hit := 0
-	for _, s := range listingSkills {
-		if _, ok := have[strings.ToLower(strings.TrimSpace(s))]; ok {
-			hit++
-		}
-	}
-	return float64(hit) / float64(len(listingSkills))
-}
-
 // NewUUIDv7 returns a freshly generated UUIDv7 — RFC 9562 §5.7. We hand-roll
 // to keep the skeleton dependency-free; M12 swaps to the chora-contracts
 // typed wrapper.

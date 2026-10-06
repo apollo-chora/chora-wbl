@@ -82,34 +82,3 @@ func TestEmployerRepo_SaveAndGet(t *testing.T) {
 		t.Errorf("expected 1, got %d", len(got))
 	}
 }
-
-// RED — roster: list active learners assigned to an employer (cross-aggregate
-// view served by domain helper, not by FK).
-func TestEmployerRoster_AddAndList(t *testing.T) {
-	t.Parallel()
-	r := employer.NewRoster()
-	r.Add("t-1", "emp-1", "gcid-A", "intern")
-	r.Add("t-1", "emp-1", "gcid-B", "apprentice")
-	r.Add("t-1", "emp-2", "gcid-C", "intern")
-	got := r.List("t-1", "emp-1")
-	if len(got) != 2 {
-		t.Errorf("expected 2 roster entries, got %d", len(got))
-	}
-	// Tenant scope.
-	if got := r.List("t-OTHER", "emp-1"); len(got) != 0 {
-		t.Errorf("cross-tenant must be empty")
-	}
-}
-
-// RED — roster Add is idempotent on (gcid, placement kind) within an employer.
-func TestEmployerRoster_AddIdempotent(t *testing.T) {
-	t.Parallel()
-	r := employer.NewRoster()
-	r.Add("t-1", "emp-1", "gcid-A", "intern")
-	// Re-adding the same learner as the same kind is a no-op.
-	r.Add("t-1", "emp-1", "gcid-A", "intern")
-	got := r.List("t-1", "emp-1")
-	if len(got) != 1 {
-		t.Errorf("duplicate (gcid, kind) add must be a no-op; got %d entries", len(got))
-	}
-}

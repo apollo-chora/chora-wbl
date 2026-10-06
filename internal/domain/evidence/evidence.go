@@ -170,16 +170,3 @@ func (r *Repo) Get(tenantID, id string) (*Evidence, bool) {
 	}
 	return e, true
 }
-
-// ListByMilestone returns evidence scoped to (tenantID, milestoneID).
-func (r *Repo) ListByMilestone(tenantID, milestoneID string) []*Evidence {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-	out := make([]*Evidence, 0)
-	for _, e := range r.by {
-		if e.TenantID == tenantID && e.MilestoneID == milestoneID {
-			out = append(out, e)
-		}
-	}
-	return out
-}

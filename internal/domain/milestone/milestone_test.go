@@ -93,29 +93,6 @@ func TestMilestone_StudentBeforeEmployer(t *testing.T) {
 	}
 }
 
-// RED — repo: ListByPlacement returns ordered milestones.
-func TestMilestoneRepo_ListByPlacement(t *testing.T) {
-	t.Parallel()
-	r := milestone.NewRepo()
-	a, _ := milestone.NewMilestone("t-1", "place-1", "M1", "s1", nil)
-	b, _ := milestone.NewMilestone("t-1", "place-1", "M2", "s2", nil)
-	c, _ := milestone.NewMilestone("t-1", "place-2", "X1", "x", nil)
-	r.Save(a)
-	r.Save(b)
-	r.Save(c)
-	got := r.ListByPlacement("t-1", "place-1")
-	if len(got) != 2 {
-		t.Errorf("expected 2, got %d", len(got))
-	}
-	if _, ok := r.Get("t-1", a.ID); !ok {
-		t.Errorf("expected hit on get")
-	}
-	// Cross-tenant.
-	if _, ok := r.Get("t-OTHER", a.ID); ok {
-		t.Errorf("cross-tenant must miss")
-	}
-}
-
 // RED — state machine guard clauses: complete twice and sign-offs with an
 // empty gcid must both fail.
 func TestMilestone_TransitionGuards(t *testing.T) {
